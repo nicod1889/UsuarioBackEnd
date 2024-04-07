@@ -5,10 +5,10 @@ import com.taller.practica.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -20,5 +20,30 @@ public class UsuarioController {
     public ResponseEntity<Void> createUser(@RequestBody Usuario user) {
         usuarioRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Usuario>> findAll() {
+        List<Usuario> list = usuarioRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
+    @GetMapping("/{id}")
+    private ResponseEntity<Usuario> findById(@PathVariable Integer id) {
+        return usuarioRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id){
+        usuarioRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAll(){
+        usuarioRepository.deleteAll();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
